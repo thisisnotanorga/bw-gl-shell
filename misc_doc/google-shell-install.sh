@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # BotWave - Google Cloud Shell Quick Install
-# Sets up BotWave server with Cloudflare tunnels
+# Sets up BotWave server with ngrok tunnels (better WebSocket support)
 
 set -e
 
@@ -34,19 +34,15 @@ log() {
     printf "[%s] ${color}%-5s${NC} %s\n" "$(date +%T)" "$level" "$*" >&2
 }
 
-silent() {
-    "$@" >/dev/null 2>&1
-}
-
 # ============================================================================
 # INSTALLATION STEPS
 # ============================================================================
 
-install_cloudflared() {
-    log INFO "Installing cloudflared..."
+install_ngrok() {
+    log INFO "Installing ngrok..."
     
-    if command -v cloudflared &> /dev/null; then
-        log INFO "cloudflared already installed, skipping"
+    if command -v ngrok &> /dev/null; then
+        log INFO "ngrok already installed, skipping"
         return 0
     fi
 
@@ -55,13 +51,10 @@ install_cloudflared() {
 
     case "$arch" in
         x86_64)
-            download_url="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"
+            download_url="https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz"
             ;;
         aarch64|arm64)
-            download_url="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64"
-            ;;
-        armv7l)
-            download_url="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm"
+            download_url="https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-arm64.tgz"
             ;;
         *)
             log ERROR "Unsupported architecture: $arch"
@@ -69,9 +62,9 @@ install_cloudflared() {
             ;;
     esac
 
-    sudo wget -q -O /usr/local/bin/cloudflared "$download_url"
-    sudo chmod +x /usr/local/bin/cloudflared
-    log INFO "cloudflared installed successfully"
+    curl -sSL "$download_url" | sudo tar -xz -C /usr/local/bin
+    sudo chmod +x /usr/local/bin/ngrok
+    log INFO "ngrok installed successfully"
 }
 
 install_botwave() {
@@ -83,7 +76,7 @@ install_botwave() {
 }
 
 create_tunnel_script() {
-    log INFO "Creating cloudflared tunnel script..."
+    log INFO "Creating ngrok tunnel script..."
     
     local script_dir="/opt/BotWave/googleshell"
     local script_file="$script_dir/tunnel.sh"
@@ -93,54 +86,65 @@ create_tunnel_script() {
     sudo tee "$script_file" > /dev/null <<'EOF'
 #!/bin/bash
 
-# BotWave Cloudflare Tunnel Starter
-# Automatically starts Cloudflare tunnels for BotWave server
+# BotWave ngrok Tunnel Starter
+# Uses ngrok for better WebSocket support
 
 echo "=========================================="
 echo "BotWave Server Started!"
 echo "=========================================="
 echo ""
-echo "Starting Cloudflare tunnels..."
+echo "Starting ngrok tunnels..."
 echo "This will expose your BotWave server to the internet."
 echo ""
 
-# Start tunnel for "commands" port (9938)
-echo "Starting tunnel for main server (port 9938)..."
-cloudflared tunnel --url http://localhost:9938 > /tmp/cloudflared_9938.log 2>&1 &
-echo $! > /tmp/cloudflared_9938.pid
+# Install ngrok if not present
+if ! command -v ngrok &> /dev/null; then
+    echo "Installing ngrok..."
+    curl -sSL https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz | tar -xz -C /tmp
+    sudo mv /tmp/ngrok /usr/local/bin/
+    sudo chmod +x /usr/local/bin/ngrok
+fi
 
-# Start tunnel for "files" port (9921)
-echo "Starting tunnel for files transfers (port 9921)..."
-cloudflared tunnel --url http://localhost:9921 > /tmp/cloudflared_9921.log 2>&1 &
-echo $! > /tmp/cloudflared_9921.pid
+# Kill any existing ngrok processes
+pkill ngrok 2>/dev/null || true
+sleep 2
 
-# Wait for tunnels to initialize
-sleep 3
+# Start tunnels
+ngrok http 9938 --log /tmp/ngrok_9938.log > /dev/null 2>&1 &
+echo $! > /tmp/ngrok_9938.pid
 
-# Display tunnel information
+ngrok http 9921 --log /tmp/ngrok_9921.log > /dev/null 2>&1 &
+echo $! > /tmp/ngrok_9921.pid
+
+# Wait for tunnels
+sleep 5
+
+# Get URLs
 echo ""
 echo "=========================================="
-echo "Your BotWave server is now accessible at:"
-echo "=========================================="
-grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9938.log | head -1 | xargs -I {} echo "Main Server: {}"
-grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9921.log | head -1 | xargs -I {} echo "WebSocket:   {}"
-echo "=========================================="
-echo ""
-echo "Tunnel PIDs stored in /tmp/cloudflared_*.pid"
-cat /tmp/cloudflared_9938.pid /tmp/cloudflared_9921.pid | xargs echo "To stop tunnels: kill"
-echo ""
+WS_URL=$(curl -s http://localhost:4040/api/tunnels | grep -o '"public_url":"https://[^"]*"' | head -1 | cut -d'"' -f4 | sed 's|https://||')
+HTTP_URL=$(curl -s http://localhost:4040/api/tunnels | grep -o '"public_url":"https://[^"]*"' | tail -1 | cut -d'"' -f4 | sed 's|https://||')
 
-MAIN_URL=$(grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9938.log | head -1 | sed 's|https://||')
-WS_HOST=$(grep -oP '[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9921.log | head -1)
-echo "Start clients with: sudo bw-client $MAIN_URL --port 443 --fhost $WS_HOST --fport 443"
+if [ -n "$WS_URL" ] && [ -n "$HTTP_URL" ]; then
+    echo "WebSocket: https://$WS_URL"
+    echo "HTTP:      https://$HTTP_URL"
+    echo "=========================================="
+    echo ""
+    echo "Connect with: bw-client $WS_URL --port 443 --fhost $HTTP_URL --fport 443"
+    echo ""
+    echo "Tunnel status: http://localhost:4040"
+else
+    echo "Error getting tunnel URLs. Check http://localhost:4040"
+fi
 echo "=========================================="
 EOF
 
+    sudo chmod +x "$script_file"
     log INFO "Tunnel script created at $script_file"
 }
 
 create_tunnel_handler() {
-    log INFO "Creating cloudflared tunnel handler..."
+    log INFO "Creating tunnel handler..."
     
     local handler_file="/opt/BotWave/handlers/s_onready.shdl"
     
@@ -148,7 +152,7 @@ create_tunnel_handler() {
     
     sudo tee "$handler_file" > /dev/null <<'EOF'
 # BotWave Server Ready Handler
-# Automatically starts Cloudflare tunnels when server is ready
+# Automatically starts ngrok tunnels when server is ready
 
 < bash /opt/BotWave/googleshell/tunnel.sh
 EOF
@@ -164,12 +168,13 @@ main() {
     echo ""
     echo "=================================="
     echo "BotWave Google Cloud Shell Install"
+    echo "Using ngrok for tunnels"
     echo "=================================="
     echo ""
     
     log INFO "Starting installation..."
     
-    install_cloudflared
+    install_ngrok
     
     install_botwave
     
@@ -182,8 +187,8 @@ main() {
     echo ""
     echo "Next steps:"
     echo "  1. Start BotWave server: bw-server"
-    echo "  2. The tunnels will start automatically when server is ready"
-    echo "  3. Use the provided URLs to access your server"
+    echo "  2. The tunnels will start automatically"
+    echo "  3. View tunnel dashboard at http://localhost:4040"
     echo ""
 }
 
