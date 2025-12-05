@@ -82,6 +82,63 @@ install_botwave() {
     log INFO "BotWave server installed"
 }
 
+create_tunnel_script() {
+    log INFO "Creating cloudflared tunnel script..."
+    
+    local script_dir="/opt/BotWave/googleshell"
+    local script_file="$script_dir/tunnel.sh"
+    
+    sudo mkdir -p "$script_dir"
+    
+    sudo tee "$script_file" > /dev/null <<'EOF'
+#!/bin/bash
+
+# BotWave Cloudflare Tunnel Starter
+# Automatically starts Cloudflare tunnels for BotWave server
+
+echo "=========================================="
+echo "BotWave Server Started!"
+echo "=========================================="
+echo ""
+echo "Starting Cloudflare tunnels..."
+echo "This will expose your BotWave server to the internet."
+echo ""
+
+# Start tunnel for "commands" port (9938)
+echo "Starting tunnel for main server (port 9938)..."
+cloudflared tunnel --url http://localhost:9938 > /tmp/cloudflared_9938.log 2>&1 &
+echo $! > /tmp/cloudflared_9938.pid
+
+# Start tunnel for "files" port (9921)
+echo "Starting tunnel for files transfers (port 9921)..."
+cloudflared tunnel --url http://localhost:9921 > /tmp/cloudflared_9921.log 2>&1 &
+echo $! > /tmp/cloudflared_9921.pid
+
+# Wait for tunnels to initialize
+sleep 3
+
+# Display tunnel information
+echo ""
+echo "=========================================="
+echo "Your BotWave server is now accessible at:"
+echo "=========================================="
+grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9938.log | head -1 | xargs -I {} echo "Main Server: {}"
+grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9921.log | head -1 | xargs -I {} echo "WebSocket:   {}"
+echo "=========================================="
+echo ""
+echo "Tunnel PIDs stored in /tmp/cloudflared_*.pid"
+cat /tmp/cloudflared_9938.pid /tmp/cloudflared_9921.pid | xargs echo "To stop tunnels: kill"
+echo ""
+
+MAIN_URL=$(grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9938.log | head -1 | sed 's|https://||')
+WS_HOST=$(grep -oP '[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9921.log | head -1)
+echo "Start clients with: sudo bw-client $MAIN_URL --port 443 --fhost $WS_HOST --fport 443"
+echo "=========================================="
+EOF
+
+    log INFO "Tunnel script created at $script_file"
+}
+
 create_tunnel_handler() {
     log INFO "Creating cloudflared tunnel handler..."
     
@@ -93,41 +150,7 @@ create_tunnel_handler() {
 # BotWave Server Ready Handler
 # Automatically starts Cloudflare tunnels when server is ready
 
-< echo "=========================================="
-< echo "BotWave Server Started!"
-< echo "=========================================="
-< echo ""
-< echo "Starting Cloudflare tunnels..."
-< echo "This will expose your BotWave server to the internet."
-< echo ""
-
-# Start tunnel for main server port 9938
-< echo "Starting tunnel for main server port 9938..."
-< cloudflared tunnel --url http://localhost:9938 > /tmp/cloudflared_9938.log 2>&1 &
-< echo $! > /tmp/cloudflared_9938.pid
-
-# Start tunnel for WebSocket port 9921
-< echo "Starting tunnel for WebSocket port 9921..."
-< cloudflared tunnel --url http://localhost:9921 > /tmp/cloudflared_9921.log 2>&1 &
-< echo $! > /tmp/cloudflared_9921.pid
-
-# Wait for tunnels to initialize
-< sleep 3
-
-# Display tunnel information
-< echo ""
-< echo "=========================================="
-< echo "Your BotWave server is now accessible at:"
-< echo "=========================================="
-< sh -c 'grep -oP "https://[a-z0-9-]+\.trycloudflare\.com" /tmp/cloudflared_9938.log | head -1 | xargs -I {} echo "Main Server: {}"'
-< sh -c 'grep -oP "https://[a-z0-9-]+\.trycloudflare\.com" /tmp/cloudflared_9921.log | head -1 | xargs -I {} echo "WebSocket:   {}"'
-< echo "=========================================="
-< echo ""
-< echo "Tunnel PIDs stored in /tmp/cloudflared_*.pid"
-< sh -c 'cat /tmp/cloudflared_9938.pid /tmp/cloudflared_9921.pid | xargs echo "To stop tunnels: kill"'
-< echo ""
-< sh -c 'MAIN_URL=$(grep -oP "https://[a-z0-9-]+\.trycloudflare\.com" /tmp/cloudflared_9938.log | head -1 | sed "s|https://||"); WS_HOST=$(grep -oP "[a-z0-9-]+\.trycloudflare\.com" /tmp/cloudflared_9921.log | head -1); echo "Start clients with: sudo bw-client $MAIN_URL --port 80 --fhost $WS_HOST --fport 80"'
-< echo "=========================================="
+< bash /opt/BotWave/googleshell/tunnel.sh
 EOF
 
     log INFO "Tunnel handler created at $handler_file"
