@@ -76,7 +76,6 @@ install_cloudflared() {
 
 install_botwave() {
     log INFO "Installing BotWave server..."
-    log WARN "This will prompt for sudo password if needed..."
     
     curl -sSL https://botwave.dpip.lol/install | sudo bash -s server
     
@@ -102,13 +101,13 @@ create_tunnel_handler() {
 < echo "This will expose your BotWave server to the internet."
 < echo ""
 
-# Start tunnel for main server port (9938)
-< echo "Starting tunnel for main server (port 9938)..."
+# Start tunnel for main server port 9938
+< echo "Starting tunnel for main server port 9938..."
 < cloudflared tunnel --url http://localhost:9938 > /tmp/cloudflared_9938.log 2>&1 &
 < echo $! > /tmp/cloudflared_9938.pid
 
-# Start tunnel for WebSocket port (9921)
-< echo "Starting tunnel for WebSocket (port 9921)..."
+# Start tunnel for WebSocket port 9921
+< echo "Starting tunnel for WebSocket port 9921..."
 < cloudflared tunnel --url http://localhost:9921 > /tmp/cloudflared_9921.log 2>&1 &
 < echo $! > /tmp/cloudflared_9921.pid
 
@@ -120,19 +119,20 @@ create_tunnel_handler() {
 < echo "=========================================="
 < echo "Your BotWave server is now accessible at:"
 < echo "=========================================="
-< grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9938.log | head -1 | xargs -I {} echo "Main Server: {}"
-< grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9921.log | head -1 | xargs -I {} echo "WebSocket:   {}"
+< sh -c 'grep -oP "https://[a-z0-9-]+\.trycloudflare\.com" /tmp/cloudflared_9938.log | head -1 | xargs -I {} echo "Main Server: {}"'
+< sh -c 'grep -oP "https://[a-z0-9-]+\.trycloudflare\.com" /tmp/cloudflared_9921.log | head -1 | xargs -I {} echo "WebSocket:   {}"'
 < echo "=========================================="
 < echo ""
 < echo "Tunnel PIDs stored in /tmp/cloudflared_*.pid"
-< cat /tmp/cloudflared_9938.pid /tmp/cloudflared_9921.pid | xargs echo "To stop tunnels: kill"
+< sh -c 'cat /tmp/cloudflared_9938.pid /tmp/cloudflared_9921.pid | xargs echo "To stop tunnels: kill"'
 < echo ""
-< grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9938.log | head -1 | sed 's|https://||' | xargs -I {} echo "Start clients with: sudo bw-client {} --port 80 --fhost $(grep -oP '[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9921.log | head -1) --fport 80"
+< sh -c 'MAIN_URL=$(grep -oP "https://[a-z0-9-]+\.trycloudflare\.com" /tmp/cloudflared_9938.log | head -1 | sed "s|https://||"); WS_HOST=$(grep -oP "[a-z0-9-]+\.trycloudflare\.com" /tmp/cloudflared_9921.log | head -1); echo "Start clients with: sudo bw-client $MAIN_URL --port 80 --fhost $WS_HOST --fport 80"'
 < echo "=========================================="
 EOF
 
     log INFO "Tunnel handler created at $handler_file"
 }
+
 # ============================================================================
 # MAIN
 # ============================================================================
