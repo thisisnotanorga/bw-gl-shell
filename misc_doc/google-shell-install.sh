@@ -173,6 +173,8 @@ main() {
     
     install_botwave
     
+    create_tunnel_script
+    
     create_tunnel_handler
     
     echo ""
