@@ -92,17 +92,13 @@ create_tunnel_script() {
 
 # BotWave bore.pub Tunnel Starter
 
-echo "=========================================="
-echo "BotWave Server Started!"
-echo "=========================================="
-echo ""
+
 echo "Starting bore.pub tunnels..."
 echo "This will expose your BotWave server to the internet."
 echo ""
 
-# Kill any existing bore processes
 pkill bore 2>/dev/null || true
-sleep 2
+sleep 1
 
 # Start tunnels (bore.pub assigns random ports)
 bore local 9938 --to bore.pub > /tmp/bore_9938.log 2>&1 &
@@ -111,10 +107,8 @@ echo $! > /tmp/bore_9938.pid
 bore local 9921 --to bore.pub > /tmp/bore_9921.log 2>&1 &
 echo $! > /tmp/bore_9921.pid
 
-# Wait for tunnels to establish
-sleep 3
+sleep 1
 
-# Extract assigned ports from logs
 echo ""
 echo "=========================================="
 WS_PORT=$(grep -oP 'listening at bore.pub:\K\d+' /tmp/bore_9938.log 2>/dev/null | head -1)
@@ -125,7 +119,7 @@ if [ -n "$WS_PORT" ] && [ -n "$HTTP_PORT" ]; then
     echo "HTTP:      bore.pub:$HTTP_PORT (local 9921)"
     echo "=========================================="
     echo ""
-    echo "Connect with: bw-client bore.pub --port $WS_PORT --fhost bore.pub --fport $HTTP_PORT"
+    echo "Connect with: sudo bw-client bore.pub --port $WS_PORT --fport $HTTP_PORT"
     echo ""
 else
     echo "Error: Could not get tunnel ports."
@@ -153,7 +147,11 @@ create_tunnel_handler() {
     sudo tee "$handler_file" > /dev/null <<'EOF'
 # BotWave Server Ready Handler
 # Automatically starts bore.pub tunnels when server is ready
-
+< echo "=========================================="
+< echo "BotWave Server Started!"
+< echo "=========================================="
+< echo ""
+< echo "Launching tunnels, please wait."
 < bash /opt/BotWave/googleshell/tunnel.sh
 EOF
 
