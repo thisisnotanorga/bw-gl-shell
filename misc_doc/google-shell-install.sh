@@ -100,23 +100,6 @@ echo "Starting bore.pub tunnels..."
 echo "This will expose your BotWave server to the internet."
 echo ""
 
-# Install bore if not present
-if ! command -v bore &> /dev/null; then
-    echo "Installing bore..."
-    ARCH=$(uname -m)
-    case "$ARCH" in
-        x86_64)
-            URL="https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-x86_64-unknown-linux-musl.tar.gz"
-            ;;
-        aarch64|arm64)
-            URL="https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-aarch64-unknown-linux-musl.tar.gz"
-            ;;
-    esac
-    curl -sSL "$URL" | tar -xz -C /tmp
-    sudo mv /tmp/bore /usr/local/bin/
-    sudo chmod +x /usr/local/bin/bore
-fi
-
 # Kill any existing bore processes
 pkill bore 2>/dev/null || true
 sleep 2
@@ -152,8 +135,8 @@ else
 fi
 echo "=========================================="
 
-# Keep tunnels alive
-wait
+# Tunnels will continue running in background
+# No 'wait' needed - let bw-server continue
 EOF
 
     sudo chmod +x "$script_file"
