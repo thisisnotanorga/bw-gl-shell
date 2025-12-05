@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # BotWave - Google Cloud Shell Quick Install
-# Sets up BotWave server with ngrok tunnels (better WebSocket support)
+# Sets up BotWave server with bore.pub tunnels
 
 set -e
 
@@ -14,6 +14,9 @@ readonly GRN='\033[0;32m'
 readonly YEL='\033[1;33m'
 readonly BLU='\033[0;34m'
 readonly NC='\033[0m'
+
+readonly BORE_SERVER="bore.pub"
+readonly BORE_VERSION="0.6.0"
 
 # ============================================================================
 # UTILITY FUNCTIONS
@@ -38,11 +41,11 @@ log() {
 # INSTALLATION STEPS
 # ============================================================================
 
-install_ngrok() {
-    log INFO "Installing ngrok..."
+install_bore() {
+    log INFO "Installing bore..."
     
-    if command -v ngrok &> /dev/null; then
-        log INFO "ngrok already installed, skipping"
+    if command -v bore &> /dev/null; then
+        log INFO "bore already installed, skipping"
         return 0
     fi
 
@@ -51,10 +54,10 @@ install_ngrok() {
 
     case "$arch" in
         x86_64)
-            download_url="https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz"
+            download_url="https://github.com/ekzhang/bore/releases/download/v${BORE_VERSION}/bore-v${BORE_VERSION}-x86_64-unknown-linux-musl.tar.gz"
             ;;
         aarch64|arm64)
-            download_url="https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-arm64.tgz"
+            download_url="https://github.com/ekzhang/bore/releases/download/v${BORE_VERSION}/bore-v${BORE_VERSION}-aarch64-unknown-linux-musl.tar.gz"
             ;;
         *)
             log ERROR "Unsupported architecture: $arch"
@@ -62,9 +65,10 @@ install_ngrok() {
             ;;
     esac
 
+    log INFO "Downloading bore from GitHub releases..."
     curl -sSL "$download_url" | sudo tar -xz -C /usr/local/bin
-    sudo chmod +x /usr/local/bin/ngrok
-    log INFO "ngrok installed successfully"
+    sudo chmod +x /usr/local/bin/bore
+    log INFO "bore installed successfully"
 }
 
 install_botwave() {
@@ -76,7 +80,7 @@ install_botwave() {
 }
 
 create_tunnel_script() {
-    log INFO "Creating ngrok tunnel script..."
+    log INFO "Creating bore tunnel script..."
     
     local script_dir="/opt/BotWave/googleshell"
     local script_file="$script_dir/tunnel.sh"
@@ -86,57 +90,70 @@ create_tunnel_script() {
     sudo tee "$script_file" > /dev/null <<'EOF'
 #!/bin/bash
 
-# BotWave ngrok Tunnel Starter
-# Uses ngrok for better WebSocket support
+# BotWave bore.pub Tunnel Starter
 
 echo "=========================================="
 echo "BotWave Server Started!"
 echo "=========================================="
 echo ""
-echo "Starting ngrok tunnels..."
+echo "Starting bore.pub tunnels..."
 echo "This will expose your BotWave server to the internet."
 echo ""
 
-# Install ngrok if not present
-if ! command -v ngrok &> /dev/null; then
-    echo "Installing ngrok..."
-    curl -sSL https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz | tar -xz -C /tmp
-    sudo mv /tmp/ngrok /usr/local/bin/
-    sudo chmod +x /usr/local/bin/ngrok
+# Install bore if not present
+if ! command -v bore &> /dev/null; then
+    echo "Installing bore..."
+    ARCH=$(uname -m)
+    case "$ARCH" in
+        x86_64)
+            URL="https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-x86_64-unknown-linux-musl.tar.gz"
+            ;;
+        aarch64|arm64)
+            URL="https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-aarch64-unknown-linux-musl.tar.gz"
+            ;;
+    esac
+    curl -sSL "$URL" | tar -xz -C /tmp
+    sudo mv /tmp/bore /usr/local/bin/
+    sudo chmod +x /usr/local/bin/bore
 fi
 
-# Kill any existing ngrok processes
-pkill ngrok 2>/dev/null || true
+# Kill any existing bore processes
+pkill bore 2>/dev/null || true
 sleep 2
 
-# Start tunnels
-ngrok http 9938 --log /tmp/ngrok_9938.log > /dev/null 2>&1 &
-echo $! > /tmp/ngrok_9938.pid
+# Start tunnels (bore.pub assigns random ports)
+bore local 9938 --to bore.pub > /tmp/bore_9938.log 2>&1 &
+echo $! > /tmp/bore_9938.pid
 
-ngrok http 9921 --log /tmp/ngrok_9921.log > /dev/null 2>&1 &
-echo $! > /tmp/ngrok_9921.pid
+bore local 9921 --to bore.pub > /tmp/bore_9921.log 2>&1 &
+echo $! > /tmp/bore_9921.pid
 
-# Wait for tunnels
-sleep 5
+# Wait for tunnels to establish
+sleep 3
 
-# Get URLs
+# Extract assigned ports from logs
 echo ""
 echo "=========================================="
-WS_URL=$(curl -s http://localhost:4040/api/tunnels | grep -o '"public_url":"https://[^"]*"' | head -1 | cut -d'"' -f4 | sed 's|https://||')
-HTTP_URL=$(curl -s http://localhost:4040/api/tunnels | grep -o '"public_url":"https://[^"]*"' | tail -1 | cut -d'"' -f4 | sed 's|https://||')
+WS_PORT=$(grep -oP 'listening at bore.pub:\K\d+' /tmp/bore_9938.log 2>/dev/null | head -1)
+HTTP_PORT=$(grep -oP 'listening at bore.pub:\K\d+' /tmp/bore_9921.log 2>/dev/null | head -1)
 
-if [ -n "$WS_URL" ] && [ -n "$HTTP_URL" ]; then
-    echo "WebSocket: https://$WS_URL"
-    echo "HTTP:      https://$HTTP_URL"
+if [ -n "$WS_PORT" ] && [ -n "$HTTP_PORT" ]; then
+    echo "WebSocket: bore.pub:$WS_PORT (local 9938)"
+    echo "HTTP:      bore.pub:$HTTP_PORT (local 9921)"
     echo "=========================================="
     echo ""
-    echo "Connect with: bw-client $WS_URL --port 443 --fhost $HTTP_URL --fport 443"
+    echo "Connect with: bw-client bore.pub --port $WS_PORT --fhost bore.pub --fport $HTTP_PORT"
     echo ""
-    echo "Tunnel status: http://localhost:4040"
 else
-    echo "Error getting tunnel URLs. Check http://localhost:4040"
+    echo "Error: Could not get tunnel ports."
+    echo "Check logs:"
+    echo "  /tmp/bore_9938.log"
+    echo "  /tmp/bore_9921.log"
 fi
 echo "=========================================="
+
+# Keep tunnels alive
+wait
 EOF
 
     sudo chmod +x "$script_file"
@@ -152,7 +169,7 @@ create_tunnel_handler() {
     
     sudo tee "$handler_file" > /dev/null <<'EOF'
 # BotWave Server Ready Handler
-# Automatically starts ngrok tunnels when server is ready
+# Automatically starts bore.pub tunnels when server is ready
 
 < bash /opt/BotWave/googleshell/tunnel.sh
 EOF
@@ -168,13 +185,13 @@ main() {
     echo ""
     echo "=================================="
     echo "BotWave Google Cloud Shell Install"
-    echo "Using ngrok for tunnels"
+    echo "Using bore.pub for tunnels"
     echo "=================================="
     echo ""
     
     log INFO "Starting installation..."
     
-    install_ngrok
+    install_bore
     
     install_botwave
     
@@ -187,8 +204,8 @@ main() {
     echo ""
     echo "Next steps:"
     echo "  1. Start BotWave server: bw-server"
-    echo "  2. The tunnels will start automatically"
-    echo "  3. View tunnel dashboard at http://localhost:4040"
+    echo "  2. The bore.pub tunnels will start automatically"
+    echo "  3. Note the assigned ports from the output"
     echo ""
 }
 
