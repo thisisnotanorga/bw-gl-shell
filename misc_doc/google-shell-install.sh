@@ -94,41 +94,41 @@ create_tunnel_handler() {
 # BotWave Server Ready Handler
 # Automatically starts Cloudflare tunnels when server is ready
 
-> echo "=========================================="
-> echo "BotWave Server Started!"
-> echo "=========================================="
-> echo ""
-> echo "Starting Cloudflare tunnels..."
-> echo "This will expose your BotWave server to the internet."
-> echo ""
+< echo "=========================================="
+< echo "BotWave Server Started!"
+< echo "=========================================="
+< echo ""
+< echo "Starting Cloudflare tunnels..."
+< echo "This will expose your BotWave server to the internet."
+< echo ""
 
 # Start tunnel for main server port (9938)
-> echo "Starting tunnel for main server (port 9938)..."
-> cloudflared tunnel --url http://localhost:9938 > /tmp/cloudflared_9938.log 2>&1 &
-> echo $! > /tmp/cloudflared_9938.pid
+< echo "Starting tunnel for main server (port 9938)..."
+< cloudflared tunnel --url http://localhost:9938 > /tmp/cloudflared_9938.log 2>&1 &
+< echo $! > /tmp/cloudflared_9938.pid
 
 # Start tunnel for WebSocket port (9921)
-> echo "Starting tunnel for WebSocket (port 9921)..."
-> cloudflared tunnel --url http://localhost:9921 > /tmp/cloudflared_9921.log 2>&1 &
-> echo $! > /tmp/cloudflared_9921.pid
+< echo "Starting tunnel for WebSocket (port 9921)..."
+< cloudflared tunnel --url http://localhost:9921 > /tmp/cloudflared_9921.log 2>&1 &
+< echo $! > /tmp/cloudflared_9921.pid
 
 # Wait for tunnels to initialize
-> sleep 3
+< sleep 3
 
 # Display tunnel information
-> echo ""
-> echo "=========================================="
-> echo "Your BotWave server is now accessible at:"
-> echo "=========================================="
-> grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9938.log | head -1 | xargs -I {} echo "Main Server: {}"
-> grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9921.log | head -1 | xargs -I {} echo "WebSocket:   {}"
-> echo "=========================================="
-> echo ""
-> echo "Tunnel PIDs stored in /tmp/cloudflared_*.pid"
-> cat /tmp/cloudflared_9938.pid /tmp/cloudflared_9921.pid | xargs echo "To stop tunnels: kill"
-> echo ""
-> grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9938.log | head -1 | sed 's|https://||' | xargs -I {} echo "Start clients with: sudo bw-client {} --port 80 --fhost $(grep -oP '[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9921.log | head -1) --fport 80"
-> echo "=========================================="
+< echo ""
+< echo "=========================================="
+< echo "Your BotWave server is now accessible at:"
+< echo "=========================================="
+< grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9938.log | head -1 | xargs -I {} echo "Main Server: {}"
+< grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9921.log | head -1 | xargs -I {} echo "WebSocket:   {}"
+< echo "=========================================="
+< echo ""
+< echo "Tunnel PIDs stored in /tmp/cloudflared_*.pid"
+< cat /tmp/cloudflared_9938.pid /tmp/cloudflared_9921.pid | xargs echo "To stop tunnels: kill"
+< echo ""
+< grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9938.log | head -1 | sed 's|https://||' | xargs -I {} echo "Start clients with: sudo bw-client {} --port 80 --fhost $(grep -oP '[a-z0-9-]+\.trycloudflare\.com' /tmp/cloudflared_9921.log | head -1) --fport 80"
+< echo "=========================================="
 EOF
 
     log INFO "Tunnel handler created at $handler_file"
@@ -139,9 +139,9 @@ EOF
 
 main() {
     echo ""
-    echo "${BLU}=========================${NC}"
-    echo "${BLU}BotWave Google Cloud Shell Install${NC}"
-    echo "${BLU}=========================${NC}"
+    echo "=================================="
+    echo "BotWave Google Cloud Shell Install"
+    echo "=================================="
     echo ""
     
     log INFO "Starting installation..."
@@ -155,8 +155,8 @@ main() {
     echo ""
     log INFO "Installation complete!"
     echo ""
-    echo "${GRN}Next steps:${NC}"
-    echo "  1. Start BotWave server: ${YEL}bw-server${NC}"
+    echo "Next steps:"
+    echo "  1. Start BotWave server: bw-server"
     echo "  2. The tunnels will start automatically when server is ready"
     echo "  3. Use the provided URLs to access your server"
     echo ""
