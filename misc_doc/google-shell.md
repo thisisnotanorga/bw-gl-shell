@@ -13,12 +13,11 @@ Of course, this tutorial will be a recap, to find more advanced informations, he
 - [Github wiki](https://github.com/dpipstudio/botwave/wiki)
 - [Website](https://botwave.dpip.lol)
 
-> [!CAUTION]
 > Google shells are ephemeral. Every created file will be deleted once your session end. Don't store important files.
 
 ## Installation
 
-To install BotWave on your Google Shell, please be sure to be in the 'botwave' directory, and run the following command:
+To install BotWave on your Google Shell, please be sure to be in the `botwave` directory, and run the following command:
 
 ```sh
 bash misc_doc/google-shell-install.sh
