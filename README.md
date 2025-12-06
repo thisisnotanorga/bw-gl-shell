@@ -43,6 +43,12 @@ curl -sSL https://botwave.dpip.lol/install | sudo bash
 
 > [!TIP]
 > adding ` -s <server, client or both>` at the end of the command skips the interactive menu and goes straight to installation!
+> 
+### BotWave Server For Cloud Shells
+You can directly try BotWave `server` on Cloud Shells by clicking on your preffered service button !
+[![Run in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/open?cloudshell_git_repo=https://github.com/dpipstudio/botwave&cloudshell_tutorial=misc_doc/google-shell.md&show=terminal)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/dpipstudio/botwave)
+
 
 > [!WARNING]
 > **Warning**: Using BotWave involves broadcasting signals which may be subject to local regulations and laws. It is your responsibility to ensure that your use of BotWave complies with all applicable legal requirements and regulations in your area. Unauthorized use of broadcasting equipment may result in legal consequences, including fines or penalties.

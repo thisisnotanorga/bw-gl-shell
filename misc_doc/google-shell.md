@@ -24,6 +24,7 @@ bash misc_doc/google-shell-install.sh
 ```
 
 It should automatically install all required components.
+> Note: This can take some time, don't worry, it didn't crash ;)
 
 ## Usage
 

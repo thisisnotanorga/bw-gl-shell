@@ -1,0 +1,5 @@
+{
+  "name": "BotWave",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "postAttachCommand": "code misc_doc/codespaces.md && echo 'Welcome to your BotWave Server for Codespaces! Please follow the tutorial to get started.'"
+}
