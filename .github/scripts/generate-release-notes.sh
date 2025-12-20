@@ -13,26 +13,29 @@ fi
 RELEASE_NOTES="release-notes.md"
 
 {
-    echo "$DESCRIPTION"
+    # Description at the top
+    echo "<p>$DESCRIPTION</p>"
+    echo "<h3>Updating to this version</h3>"
+    echo "<p> To update to this version, run the following command.</p>"
+    echo "<pre>bw-update --to $VERSION</pre>"
     echo ""
-    
+
     if [ -n "$PREVIOUS_COMMIT" ]; then
-        echo "---"
         echo ""
-        echo "## Commit History"
-        echo ""
-        
+
+        # Start the collapsible block
+        echo "<details>"
+        echo "<summary><code>Commit history</code></summary>"
+        echo "<ul>"
+
         if git rev-parse "$PREVIOUS_COMMIT" >/dev/null 2>&1; then
-            echo "### Changes since $PREVIOUS_COMMIT"
-            echo ""
-            git log --pretty=format:"- %s (\`%h\`)" "$PREVIOUS_COMMIT"..HEAD
+            git log --pretty=format:"<li>%s (<code>%h</code>)</li>" "$PREVIOUS_COMMIT"..HEAD
         else
-            echo "### Full commit history"
-            echo ""
-            git log --pretty=format:"- %s (\`%h\`)" --max-count=50
+            git log --pretty=format:"<li>%s (<code>%h</code>)</li>" --max-count=50
         fi
-        
-        echo ""
+
+        echo "</ul>"
+        echo "</details>"
     fi
 } > "$RELEASE_NOTES"
 
