@@ -1,6 +1,10 @@
 {
   "releases": [
     {
+      "codename": "v1.0.1-oak",
+      "commit": "87e130641e3f027628f35a5a56a729d8bf0eda10"
+    },
+    {
       "codename": "v1.0.0-sapling",
       "commit": "80511f946026093cef743c66bc37f5fad5587adb"
     }
