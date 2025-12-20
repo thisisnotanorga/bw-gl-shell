@@ -55,15 +55,15 @@ if [ -z "$latest_version" ]; then
     exit 1
 fi
 
-echo "Latest version in releases.txt: $latest_version"
+echo "Latest version in releases.txt: $latest_version" >&2
 
 if git rev-parse "$latest_version" >/dev/null 2>&1; then
-    echo "Release $latest_version already exists"
+    echo "Release $latest_version already exists" >&2
     echo "new_release=false" >> $GITHUB_OUTPUT
     exit 0
 fi
 
-echo "New release detected: $latest_version"
+echo "New release detected: $latest_version" >&2
 echo "new_release=true" >> $GITHUB_OUTPUT
 echo "version=$latest_version" >> $GITHUB_OUTPUT
 
@@ -83,4 +83,4 @@ if [ -z "$previous_commit" ]; then
 fi
 
 echo "previous_commit=$previous_commit" >> $GITHUB_OUTPUT
-echo "Previous commit/tag: $previous_commit"
+echo "Previous commit/tag: $previous_commit" >&2
