@@ -1,4 +1,5 @@
 {
+    "releases": [],
     "client": {
         "files": [
             "client/client.py",
@@ -19,8 +20,12 @@
             "server/server.py",
             "shared/tls.py"
         ],
-        "requirements": ["cryptography==36.0.2"],
-        "binaries": ["bin/bw-server"]
+        "requirements": [
+            "cryptography==36.0.2"
+        ],
+        "binaries": [
+            "bin/bw-server"
+        ]
     },
     "always": {
         "files": [
