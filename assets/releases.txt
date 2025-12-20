@@ -4,10 +4,10 @@
 # - Releases are listed in descending order, with the latest release first.
 # - Each release follows this structure:
 #
-#   # =--- release-name ---=
-#   # Release description
-#   # Can span multiple lines
-#   # =--- END ===
+#   =--- release-name ---=
+#   Release description
+#   Can span multiple lines
+#   =--- END ===
 #
 # Details:
 # - release-name: the name of the release

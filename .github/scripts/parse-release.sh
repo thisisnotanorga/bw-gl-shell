@@ -12,14 +12,13 @@ parse_latest_release() {
     local in_release=false
     local version=""
     local description=""
-    local line_count=0
     
     while IFS= read -r line; do
-        if [[ -z "$line" || "$line" =~ ^#[[:space:]]*$ ]]; then
+        if [[ -z "$line" || "$line" =~ ^# ]]; then
             continue
         fi
-        
-        if [[ "$line" =~ ^#[[:space:]]*=---[[:space:]]*(.+)[[:space:]]*---= ]]; then
+
+        if [[ "$line" =~ ^=---[[:space:]]*(.+)[[:space:]]*---= ]]; then
             if [ "$in_release" = false ]; then
                 version="${BASH_REMATCH[1]}"
                 version=$(echo "$version" | xargs)
@@ -27,25 +26,25 @@ parse_latest_release() {
                 continue
             fi
         fi
-        
-        if [[ "$line" =~ ^#[[:space:]]*=---[[:space:]]*END[[:space:]]*---= ]]; then
+
+        if [[ "$line" =~ ^=---[[:space:]]*END[[:space:]]*---= ]]; then
             if [ "$in_release" = true ]; then
                 break
             fi
         fi
-        
+
         if [ "$in_release" = true ]; then
-            clean_line="${line#\# }"
             if [ -n "$description" ]; then
-                description="$description"$'\n'"$clean_line"
+                description="$description"$'\n'"$line"
             else
-                description="$clean_line"
+                description="$line"
             fi
         fi
     done < "$RELEASES_FILE"
-    
+
     echo "$version|$description"
 }
+
 
 latest_info=$(parse_latest_release)
 latest_version=$(echo "$latest_info" | cut -d'|' -f1)
