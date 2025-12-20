@@ -13,29 +13,26 @@ fi
 RELEASE_NOTES="release-notes.md"
 
 {
-    echo "# $VERSION"
-    echo ""
     echo "$DESCRIPTION"
     echo ""
     
     if [ -n "$PREVIOUS_COMMIT" ]; then
-        echo "<details>"
-        echo "<summary>Commit History</summary>"
+        echo "---"
         echo ""
-        echo "## Changes since $PREVIOUS_COMMIT"
+        echo "## Commit History"
         echo ""
         
         if git rev-parse "$PREVIOUS_COMMIT" >/dev/null 2>&1; then
+            echo "### Changes since $PREVIOUS_COMMIT"
+            echo ""
             git log --pretty=format:"- %s (\`%h\`)" "$PREVIOUS_COMMIT"..HEAD
         else
-            echo "- Full commit history:"
+            echo "### Full commit history"
             echo ""
             git log --pretty=format:"- %s (\`%h\`)" --max-count=50
         fi
         
         echo ""
-        echo ""
-        echo "</details>"
     fi
 } > "$RELEASE_NOTES"
 
