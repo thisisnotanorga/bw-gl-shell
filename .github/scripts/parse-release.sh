@@ -21,7 +21,7 @@ parse_latest_release() {
         if [[ "$line" =~ ^=---[[:space:]]*(.+)[[:space:]]*---= ]]; then
             if [ "$in_release" = false ]; then
                 version="${BASH_REMATCH[1]}"
-                version=$(echo "$version" | xargs)
+                version=$(echo "$version" | xargs | tr -d '\r')
                 in_release=true
                 continue
             fi
@@ -34,6 +34,7 @@ parse_latest_release() {
         fi
 
         if [ "$in_release" = true ]; then
+            line=$(echo "$line" | tr -d '\r')
             if [ -n "$description" ]; then
                 description="$description"$'\n'"$line"
             else
@@ -42,13 +43,28 @@ parse_latest_release() {
         fi
     done < "$RELEASES_FILE"
 
-    echo "$version|$description"
+    echo "$version"
+    echo "---DESCRIPTION---"
+    echo "$description"
 }
 
+latest_version=""
+latest_description=""
+in_desc=false
 
-latest_info=$(parse_latest_release)
-latest_version=$(echo "$latest_info" | cut -d'|' -f1)
-latest_description=$(echo "$latest_info" | cut -d'|' -f2-)
+while IFS= read -r line; do
+    if [ -z "$latest_version" ]; then
+        latest_version="$line"
+    elif [ "$line" = "---DESCRIPTION---" ]; then
+        in_desc=true
+    elif [ "$in_desc" = true ]; then
+        if [ -n "$latest_description" ]; then
+            latest_description="$latest_description"$'\n'"$line"
+        else
+            latest_description="$line"
+        fi
+    fi
+done < <(parse_latest_release)
 
 if [ -z "$latest_version" ]; then
     echo "Error: Could not parse latest release from $RELEASES_FILE"
