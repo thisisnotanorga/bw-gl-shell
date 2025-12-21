@@ -1,6 +1,10 @@
 {
   "releases": [
     {
+      "codename": "v1.0.3-whatever",
+      "commit": "873b57dfa8a24f6d9007d4ca52bc521a057103e0"
+    },
+    {
       "codename": "v1.0.2-love-this",
       "commit": "3de328d12d6d2fd6ba52f88630a3bf6187ef75d7"
     },
