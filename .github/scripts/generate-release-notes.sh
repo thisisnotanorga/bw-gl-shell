@@ -2,8 +2,7 @@
 set -e
 
 VERSION="$1"
-DESCRIPTION="$2"
-PREVIOUS_COMMIT="$3"
+PREVIOUS_COMMIT="$2"
 
 if [ -z "$VERSION" ]; then
     echo "Error: VERSION not provided"
@@ -11,10 +10,13 @@ if [ -z "$VERSION" ]; then
 fi
 
 RELEASE_NOTES="release-notes.md"
+DESCRIPTION_FILE="/tmp/release-description.txt"
 
 {
     # description at the top
-    echo "$DESCRIPTION"
+    if [ -f "$DESCRIPTION_FILE" ]; then
+        cat "$DESCRIPTION_FILE"
+    fi
     echo ""
     echo "### Updating to this version"
     echo ""

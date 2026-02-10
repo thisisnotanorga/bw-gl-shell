@@ -83,11 +83,8 @@ echo "New release detected: $latest_version" >&2
 echo "new_release=true" >> $GITHUB_OUTPUT
 echo "version=$latest_version" >> $GITHUB_OUTPUT
 
-{
-    echo "description<<EOF"
-    echo "$latest_description"
-    echo "EOF"
-} >> $GITHUB_OUTPUT
+echo "$latest_description" > /tmp/release-description.txt
+echo "description_file=/tmp/release-description.txt" >> $GITHUB_OUTPUT
 
 previous_commit=""
 if [ -f "assets/installation.json" ]; then
