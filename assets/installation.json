@@ -1,6 +1,10 @@
 {
   "releases": [
     {
+      "codename": "v1.0.5-markdown2",
+      "commit": "ef09e4bd2e47961048e7dc9d06af1590bb7fdea2"
+    },
+    {
       "codename": "v1.0.4-markdown",
       "commit": "b721e3535b345fd14e1c5ce3e60e83f4f6a3a43e"
     },
