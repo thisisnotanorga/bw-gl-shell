@@ -14,6 +14,14 @@
 # - Release description: detailed information about the release
 # - =--- END ---=: marks the end of the release 
 
+=--- v1.0.4-markdown ---=
+## do header work ?
+*Whats new:*
+- do `codeblocks` work ?
+- do **idk** work ?
+- yay
+=--- END ---=
+
 =--- v1.0.3-whatever ---=
 **Testing md support**
 *Whats new:*
