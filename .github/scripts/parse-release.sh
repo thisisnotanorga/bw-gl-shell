@@ -14,7 +14,11 @@ parse_latest_release() {
     local description=""
     
     while IFS= read -r line; do
-        if [[ -z "$line" || "$line" =~ ^# ]]; then
+        if [[ -z "$line" ]]; then
+            continue
+        fi
+        
+        if [[ "$in_release" = false ]] && [[ "$line" =~ ^# ]]; then
             continue
         fi
 
