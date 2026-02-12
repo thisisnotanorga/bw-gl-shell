@@ -26,11 +26,12 @@ jobs:
           chmod +x .github/scripts/parse-release.sh
           .github/scripts/parse-release.sh
       
-      - name: Update installation.json
+      - name: Update installation.json (placeholder)
         if: steps.parse.outputs.new_release == 'true'
         run: |
           chmod +x .github/scripts/update-installation.sh
-          .github/scripts/update-installation.sh "${{ steps.parse.outputs.version }}" "${{ github.sha }}"
+          # Use a placeholder commit hash that we'll update after the actual commit
+          .github/scripts/update-installation.sh "${{ steps.parse.outputs.version }}" "PLACEHOLDER_COMMIT"
       
       - name: Commit installation.json changes
         if: steps.parse.outputs.new_release == 'true'
@@ -39,9 +40,35 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add assets/installation.json
-          git diff --staged --quiet || git commit -m "Update installation.json for release ${{ steps.parse.outputs.version }}"
-          git push
-          echo "new_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            echo "new_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
+          else
+            # Make the initial commit with placeholder
+            git commit -m "Update installation.json for release ${{ steps.parse.outputs.version }}"
+            
+            # Get the commit hash we just created
+            NEW_SHA=$(git rev-parse HEAD)
+            echo "Created commit: $NEW_SHA"
+            
+            # Now update installation.json with the ACTUAL commit hash
+            chmod +x .github/scripts/update-installation.sh
+            .github/scripts/update-installation.sh "${{ steps.parse.outputs.version }}" "$NEW_SHA"
+            
+            # Amend the commit with the corrected installation.json
+            git add assets/installation.json
+            git commit --amend --no-edit
+            
+            # Get the final commit hash after amending
+            FINAL_SHA=$(git rev-parse HEAD)
+            echo "Final commit: $FINAL_SHA"
+            echo "new_sha=$FINAL_SHA" >> $GITHUB_OUTPUT
+            
+            # Push the corrected commit
+            git push --force-with-lease
+          fi
       
       - name: Generate release notes
         if: steps.parse.outputs.new_release == 'true'
