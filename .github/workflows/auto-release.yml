@@ -26,13 +26,6 @@ jobs:
           chmod +x .github/scripts/parse-release.sh
           .github/scripts/parse-release.sh
       
-      - name: Generate release notes
-        if: steps.parse.outputs.new_release == 'true'
-        id: notes
-        run: |
-          chmod +x .github/scripts/generate-release-notes.sh
-          .github/scripts/generate-release-notes.sh "${{ steps.parse.outputs.version }}" "${{ steps.parse.outputs.previous_commit }}"
-      
       - name: Update installation.json
         if: steps.parse.outputs.new_release == 'true'
         run: |
@@ -49,6 +42,13 @@ jobs:
           git diff --staged --quiet || git commit -m "Update installation.json for release ${{ steps.parse.outputs.version }}"
           git push
           echo "new_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+      
+      - name: Generate release notes
+        if: steps.parse.outputs.new_release == 'true'
+        id: notes
+        run: |
+          chmod +x .github/scripts/generate-release-notes.sh
+          .github/scripts/generate-release-notes.sh "${{ steps.parse.outputs.version }}" "${{ steps.parse.outputs.previous_commit }}"
       
       - name: Create GitHub Release
         if: steps.parse.outputs.new_release == 'true'
