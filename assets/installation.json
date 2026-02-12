@@ -1,6 +1,10 @@
 {
   "releases": [
     {
+      "codename": "v99.0.1-a",
+      "commit": "4f6863496f4da19402fe751678bdc0289c3b0aa9"
+    },
+    {
       "codename": "v1.0.10-umtiza",
       "commit": "565a3cca293ea59ed2c986f237a8e2a724cafa51"
     },
