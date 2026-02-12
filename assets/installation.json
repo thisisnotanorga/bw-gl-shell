@@ -1,6 +1,10 @@
 {
   "releases": [
     {
+      "codename": "v99.0.5-a",
+      "commit": "c696dd407f552edfcdfe867b64bdc16c6ede8733"
+    },
+    {
       "codename": "v99.0.4-a",
       "commit": "7d739dd0d6907e44cf76bbb189e44a3d6e15ef4c"
     },
