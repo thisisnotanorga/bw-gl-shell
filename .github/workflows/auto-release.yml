@@ -26,49 +26,39 @@ jobs:
           chmod +x .github/scripts/parse-release.sh
           .github/scripts/parse-release.sh
       
-      - name: Update installation.json (placeholder)
-        if: steps.parse.outputs.new_release == 'true'
-        run: |
-          chmod +x .github/scripts/update-installation.sh
-          # Use a placeholder commit hash that we'll update after the actual commit
-          .github/scripts/update-installation.sh "${{ steps.parse.outputs.version }}" "PLACEHOLDER_COMMIT"
-      
-      - name: Commit installation.json changes
+      - name: Create placeholder commit and update with real hash
         if: steps.parse.outputs.new_release == 'true'
         id: commit_changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add assets/installation.json
           
-          # Check if there are changes to commit
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-            echo "new_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
-          else
-            # Make the initial commit with placeholder
-            git commit -m "Update installation.json for release ${{ steps.parse.outputs.version }}"
-            
-            # Get the commit hash we just created
-            NEW_SHA=$(git rev-parse HEAD)
-            echo "Created commit: $NEW_SHA"
-            
-            # Now update installation.json with the ACTUAL commit hash
-            chmod +x .github/scripts/update-installation.sh
-            .github/scripts/update-installation.sh "${{ steps.parse.outputs.version }}" "$NEW_SHA"
-            
-            # Amend the commit with the corrected installation.json
-            git add assets/installation.json
-            git commit --amend --no-edit
-            
-            # Get the final commit hash after amending
-            FINAL_SHA=$(git rev-parse HEAD)
-            echo "Final commit: $FINAL_SHA"
-            echo "new_sha=$FINAL_SHA" >> $GITHUB_OUTPUT
-            
-            # Push the corrected commit
-            git push --force-with-lease
-          fi
+          # First, add placeholder entry
+          chmod +x .github/scripts/update-installation.sh
+          .github/scripts/update-installation.sh "${{ steps.parse.outputs.version }}" "PLACEHOLDER_COMMIT"
+          
+          # Commit the placeholder
+          git add assets/installation.json
+          git commit -m "Update installation.json for release ${{ steps.parse.outputs.version }}"
+          
+          # Get the commit hash we just created
+          NEW_SHA=$(git rev-parse HEAD)
+          echo "Created commit with placeholder: $NEW_SHA"
+          
+          # Now replace PLACEHOLDER_COMMIT with the real commit hash
+          sed -i "s/PLACEHOLDER_COMMIT/$NEW_SHA/g" assets/installation.json
+          
+          # Amend the commit with the corrected installation.json
+          git add assets/installation.json
+          git commit --amend --no-edit
+          
+          # Get the final commit hash
+          FINAL_SHA=$(git rev-parse HEAD)
+          echo "Final commit after amend: $FINAL_SHA"
+          echo "new_sha=$FINAL_SHA" >> $GITHUB_OUTPUT
+          
+          # Push with force-with-lease
+          git push --force-with-lease
       
       - name: Generate release notes
         if: steps.parse.outputs.new_release == 'true'
