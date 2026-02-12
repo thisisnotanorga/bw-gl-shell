@@ -2,7 +2,7 @@
 
 # BotWave - Update Script
 # A program by Douxx (douxx.tech | github.com/dpipstudio)
-# https://github.com/dpipstudio/botwave
+# https://github.com/thisisnotanorga/bw-gl-shell
 # Licensed under GPL-v3.0
 
 set -e
@@ -27,7 +27,7 @@ readonly RED='\033[0;31m'
 readonly GRN='\033[0;32m'
 readonly YEL='\033[1;33m'
 readonly NC='\033[0m'
-readonly GITHUB_RAW_URL="https://raw.githubusercontent.com/dpipstudio/botwave"
+readonly GITHUB_RAW_URL="https://raw.githubusercontent.com/thisisnotanorga/bw-gl-shell"
 readonly INSTALL_DIR="/opt/BotWave"
 readonly BIN_DIR="$INSTALL_DIR/bin"
 readonly BACKENDS_DIR="$INSTALL_DIR/backends"
@@ -443,7 +443,7 @@ update_backends() {
 check_for_updates() {
     if [[ "$USE_LATEST" == true ]]; then
         log INFO "Fetching latest commit..."
-        local latest_commit=$(curl -sSL https://api.github.com/repos/dpipstudio/botwave/commits | \
+        local latest_commit=$(curl -sSL https://api.github.com/repos/thisisnotanorga/bw-gl-shell/commits | \
             grep '"sha":' | \
             head -n 1 | \
             cut -d '"' -f 4)

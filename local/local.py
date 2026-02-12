@@ -5,7 +5,7 @@
 # A program by Douxx (douxx.tech | github.com/douxxtech)
 # PiWave is required! (https://github.com/douxxtech/piwave)
 # bw_custom is required! (https://github.com/dpipstudio/bw_custom)
-# https://github.com/dpipstudio/botwave
+# https://github.com/thisisnotanorga/bw-gl-shell
 # https://botwave.dpip.lol
 # A DPIP Studio project. https://dpip.lol
 # Licensed under GPL-v3.0 (see LICENSE)
@@ -451,7 +451,7 @@ class BotWaveCLI:
 
         try:
             headers = {
-                "User-Agent": f"BotWaveDownloads/{PROTOCOL_VERSION} (+https://github.com/dpipstudio/botwave/)"
+                "User-Agent": f"BotWaveDownloads/{PROTOCOL_VERSION} (+https://github.com/thisisnotanorga/bw-gl-shell/)"
             }
 
             if not dest_name:

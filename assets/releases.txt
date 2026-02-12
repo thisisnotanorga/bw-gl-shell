@@ -49,7 +49,7 @@
     - Version `2.0.2`
 
 - **New features**:
-    - `queue` command to manage your playlist. See [the wiki](https://github.com/dpipstudio/botwave/wiki/Queue-system)
+    - `queue` command to manage your playlist. See [the wiki](https://github.com/thisisnotanorga/bw-gl-shell/wiki/Queue-system)
 
 - **Usage changes**:
     - Now local client and client can take the `--talk` argument to show [`PiWave`](https://git.douxx.tech/piwave) debug logs. Disabled by default.

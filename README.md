@@ -1,9 +1,9 @@
 <div align="center">
 
-<img src="https://togp.xyz/?repo=botwave&owner=dpipstudio&cache=false&svg=https://raw.githubusercontent.com/dpipstudio/botwave/refs/heads/main/assets/readme_assets/togp_logo.svg&failurl=https://images.dpip.lol/bw-logo-big.png" alt="BotWave"/>
+<img src="https://togp.xyz/?repo=botwave&owner=dpipstudio&cache=false&svg=https://raw.githubusercontent.com/thisisnotanorga/bw-gl-shell/refs/heads/main/assets/readme_assets/togp_logo.svg&failurl=https://images.dpip.lol/bw-logo-big.png" alt="BotWave"/>
 
 <h1>BotWave - Your Raspberry Pi FM Network</h1>
-<h4> <a href="https://botwave.dpip.lol">Website</a> | <a href="#installation">Install</a> | <a href="#mentions">Mentions</a> | <a href="https://github.com/dpipstudio/botwave/wiki">Wiki</a></h4>
+<h4> <a href="https://botwave.dpip.lol">Website</a> | <a href="#installation">Install</a> | <a href="#mentions">Mentions</a> | <a href="https://github.com/thisisnotanorga/bw-gl-shell/wiki">Wiki</a></h4>
 
 
 </div>
@@ -100,14 +100,14 @@ BotWave lets you broadcast audio over FM radio using Raspberry Pi devices. It su
 ## Get Started
 
 > [!NOTE]
-> If you want a more detailed guide, you might want to check [`/wiki/Setup`](https://github.com/dpipstudio/botwave/wiki/Setup)
+> If you want a more detailed guide, you might want to check [`/wiki/Setup`](https://github.com/thisisnotanorga/bw-gl-shell/wiki/Setup)
 
 > [!WARNING]
 > - **BotWave broadcasts FM signals**, which may be regulated in your area.
 > - **Check local laws** before use, unauthorized broadcasts may incur fines.
 > - **Use a band-pass filter** to minimize interference.
 > - **The authors are not responsible** for legal issues or hardware damage.
-> - **See FAQ** for more information: [`/wiki/FAQ`](https://github.com/dpipstudio/botwave/wiki/FAQ)
+> - **See FAQ** for more information: [`/wiki/FAQ`](https://github.com/thisisnotanorga/bw-gl-shell/wiki/FAQ)
 
 ### Installation
 For debian-like operating systems (Debian, Ubuntu, Raspberry Pi OS, Zorin OS, etc), we provide an install script.
@@ -409,13 +409,13 @@ curl -sSL https://botwave.dpip.lol/uninstall | sudo bash
 
 ### BotWave Server For Cloud Instances
 You can directly try BotWave `server` on Cloud Instances like Google Shell or GitHub Codespaces.  
-[![Run in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/open?cloudshell_git_repo=https://github.com/dpipstudio/botwave&cloudshell_tutorial=misc_doc/google-shell.md&show=terminal)  
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/dpipstudio/botwave)
+[![Run in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/open?cloudshell_git_repo=https://github.com/thisisnotanorga/bw-gl-shell&cloudshell_tutorial=misc_doc/google-shell.md&show=terminal)  
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/thisisnotanorga/bw-gl-shell)
 
 
 ### Get Help
 Got a question or an issue ? Feel free to ask for help !  
-- Open an [issue](https://github.com/dpipstudio/botwave/issues/new)
+- Open an [issue](https://github.com/thisisnotanorga/bw-gl-shell/issues/new)
 - Join the [discord](https://discord.gg/r5ragNsQxp)
 
 

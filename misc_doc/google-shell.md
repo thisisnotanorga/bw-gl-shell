@@ -9,8 +9,8 @@ In this tutorial, we'll learn how to install and start a server, connect a clien
 
 This tutorial is a recap. For more advanced information, check out these resources:
 
-* [GitHub repo](https://github.com/dpipstudio/botwave)
-* [GitHub wiki](https://github.com/dpipstudio/botwave/wiki)
+* [GitHub repo](https://github.com/thisisnotanorga/bw-gl-shell)
+* [GitHub wiki](https://github.com/thisisnotanorga/bw-gl-shell/wiki)
 * [Website](https://botwave.dpip.lol)
 
 > **Note:** Google Shell sessions are ephemeral. Every file you create will be deleted once your session ends. Do not store important files there.

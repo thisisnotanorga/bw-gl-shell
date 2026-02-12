@@ -9,8 +9,8 @@ In this tutorial, we will learn how to install and start a server, connect a cli
 
 This tutorial is a recap. For more advanced information, check out these resources:
 
-* [GitHub repo](https://github.com/dpipstudio/botwave)
-* [GitHub wiki](https://github.com/dpipstudio/botwave/wiki)
+* [GitHub repo](https://github.com/thisisnotanorga/bw-gl-shell)
+* [GitHub wiki](https://github.com/thisisnotanorga/bw-gl-shell/wiki)
 * [Website](https://botwave.dpip.lol)
 
 > **Note:** GitHub Codespaces are ephemeral. Files in `/workspaces` persist during your Codespace session, but the environment is rebuilt when it is stopped. Do not store critical data here.

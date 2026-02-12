@@ -57,7 +57,7 @@ targets: Specifies the target clients. Can be 'all', a client ID, a hostname, or
 `live`: Start a live broadcast to client(s).  
     - Usage: `botwave> live <all> [frequency] [ps] [rt] [pi]`  
 
-`queue`: Manages the queue. See the [`Main/Queue system`](https://github.com/dpipstudio/botwave/wiki/Queue-system) wiki page for more details.  
+`queue`: Manages the queue. See the [`Main/Queue system`](https://github.com/thisisnotanorga/bw-gl-shell/wiki/Queue-system) wiki page for more details.  
     - Usage: `botwave> queue ?`  
 
 `sstv`: Start broadcasting an image converted to SSTV. For modes see [dnet/pySSTV](https://github.com/dnet/pySSTV/).  

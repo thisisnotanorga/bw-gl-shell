@@ -2,7 +2,7 @@
 
 # BotWave - Uninstall Script
 # A program by Douxx (douxx.tech | github.com/dpipstudio)
-# https://github.com/dpipstudio/botwave
+# https://github.com/thisisnotanorga/bw-gl-shell
 # Licensed under GPL-v3.0
 
 set -e

@@ -66,7 +66,7 @@ Once the client is running, you can use the following commands:
 - `live`: Start a live broadcast.  
     - Usage: `botwave> live [frequency] [ps] [rt] [pi]`
   
-- `queue`: Manages the queue. See the [`Main/Queue system`](https://github.com/dpipstudio/botwave/wiki/Queue-system) wiki page for more details.  
+- `queue`: Manages the queue. See the [`Main/Queue system`](https://github.com/thisisnotanorga/bw-gl-shell/wiki/Queue-system) wiki page for more details.  
     - Usage: `botwave> queue ?`
 
 - `sstv`: Start broadcasting an image converted to SSTV. For modes see [dnet/pySSTV](https://github.com/dnet/pySSTV/).  

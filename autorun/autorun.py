@@ -3,7 +3,7 @@
 
 # BotWave - AutoRunner
 # A program by Douxx (douxx.tech | github.com/dpipstudio)
-# https://github.com/dpipstudio/botwave
+# https://github.com/thisisnotanorga/bw-gl-shell
 # https://botwave.dpip.lol
 # A DPIP Studio project. https://dpip.lol
 # Licensed under GPL-v3.0 (see LICENSE)
