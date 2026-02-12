@@ -92,9 +92,11 @@ echo "description_file=/tmp/release-description.txt" >> $GITHUB_OUTPUT
 
 previous_commit=""
 if [ -f "assets/installation.json" ]; then
-    previous_commit=$(grep -oP '"commit":\s*"\K[^"]+' assets/installation.json | head -n 1)
+    # get the second commit entry (the first will be the current/about-to-be-previous version)
+    previous_commit=$(grep -oP '"commit":\s*"\K[^"]+' assets/installation.json | sed -n '1p')
 fi
 
+# If we couldn't find a previous commit in installation.json, try git tags
 if [ -z "$previous_commit" ]; then
     previous_commit=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
 fi

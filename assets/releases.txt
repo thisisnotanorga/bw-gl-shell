@@ -14,6 +14,11 @@
 # - Release description: detailed information about the release
 # - =--- END ---=: marks the end of the release 
 
+=--- v99.0.2-a ---=
+**What changed:**
+- guess it
+=--- END ---=
+
 =--- v99.0.1-a ---=
 **What changed:**
 - guess it
