@@ -26,6 +26,14 @@ jobs:
           chmod +x .github/scripts/parse-release.sh
           .github/scripts/parse-release.sh
       
+      - name: Save current HEAD as previous commit for git log
+        if: steps.parse.outputs.new_release == 'true'
+        id: save_head
+        run: |
+          CURRENT_HEAD=$(git rev-parse HEAD)
+          echo "current_head=$CURRENT_HEAD" >> $GITHUB_OUTPUT
+          echo "Saved current HEAD: $CURRENT_HEAD"
+      
       - name: Create placeholder commit and update with real hash
         if: steps.parse.outputs.new_release == 'true'
         id: commit_changes
@@ -65,7 +73,8 @@ jobs:
         id: notes
         run: |
           chmod +x .github/scripts/generate-release-notes.sh
-          .github/scripts/generate-release-notes.sh "${{ steps.parse.outputs.version }}" "${{ steps.parse.outputs.previous_commit }}"
+          # Use the saved HEAD from before we made changes
+          .github/scripts/generate-release-notes.sh "${{ steps.parse.outputs.version }}" "${{ steps.save_head.outputs.current_head }}"
       
       - name: Create GitHub Release
         if: steps.parse.outputs.new_release == 'true'
